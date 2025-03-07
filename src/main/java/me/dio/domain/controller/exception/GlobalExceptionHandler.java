@@ -11,23 +11,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
-	private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    
+    private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<String> handleBusinessException(IllegalArgumentException businessException){
-		return new ResponseEntity<>(businessException.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-	}
-	
-	@ExceptionHandler(NoSuchElementException.class)
-	public ResponseEntity<String> handleNotFoundException(NoSuchElementException notFoundException){
-		return new ResponseEntity<>("Resource ID not found", HttpStatus.NOT_FOUND);
-	}
-	
-	@ExceptionHandler(NoSuchElementException.class)
-	public ResponseEntity<String> handleUnexpectedExcepion(Throwable unexpectedExcepion){
-		var message = "Unexpected server error, see the logs.";
-		logger.error("", unexpectedExcepion);
-		return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+    // Trata exceções específicas de negócio
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleBusinessException(IllegalArgumentException businessException){
+        return new ResponseEntity<>(businessException.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    
+    // Trata NoSuchElementException especificamente
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNotFoundException(NoSuchElementException notFoundException){
+        return new ResponseEntity<>("Resource ID not found", HttpStatus.NOT_FOUND);
+    }
+    
+    // Trata exceções inesperadas (gerais)
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<String> handleUnexpectedExcepion(Throwable unexpectedExcepion){
+        var message = "Unexpected server error, see the logs.";
+        logger.error("Unexpected error: ", unexpectedExcepion);
+        return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
